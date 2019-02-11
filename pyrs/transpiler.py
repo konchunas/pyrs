@@ -106,7 +106,7 @@ class RustTranspiler(CLikeTranspiler):
             value_id = ""
 
         if is_class_or_module(value_id, node.scopes):
-            return "{0}::{1}".format(value_id, attr);
+            return "{0}::{1}".format(value_id, attr)
 
         return value_id + "." + attr
 
@@ -155,8 +155,11 @@ class RustTranspiler(CLikeTranspiler):
             placeholders = []
             for n in node.args:
                 values.append(self.visit(n))
-                placeholders.append("{:?} ");
-            return 'println!("{0}",{1});'.format("".join(placeholders), ", ".join(values));
+                placeholders.append("{:?} ")
+            if len(values) != 1:
+                return 'println!("{0}", {1});'.format("".join(placeholders), ", ".join(values))
+            else:
+                return 'println!({0});'.format(values[0])
 
         return '{0}({1})'.format(fname, args)
 
@@ -277,8 +280,8 @@ class RustTranspiler(CLikeTranspiler):
                 if func.name == "__init__":
                     class_members = self.visit_init_function(func)
 
-        struct_def = "struct {0} {{\n{1}\n}}\n\n".format(node.name, class_members);
-        impl_def = "impl {0} {{\n".format(node.name);
+        struct_def = "struct {0} {{\n{1}\n}}\n\n".format(node.name, class_members)
+        impl_def = "impl {0} {{\n".format(node.name)
         buf = [self.visit(b) for b in node.body]
         return "{0}{1}{2} \n}}".format(struct_def, impl_def, "\n".join(buf))
 
@@ -344,7 +347,7 @@ class RustTranspiler(CLikeTranspiler):
         buf = ['let {0} = {{ //unsupported'.format(name)]
         buf += [self.visit(n) for n in body]
         buf.append('};')
-        return buf;
+        return buf
 
     def visit_Try(self, node, finallybody=None):
         buf = self.visit_unsupported_body("try_dummy", node.body)
