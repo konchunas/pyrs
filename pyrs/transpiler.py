@@ -158,8 +158,10 @@ class RustTranspiler(CLikeTranspiler):
                 placeholders.append("{:?} ")
             if len(values) != 1:
                 return 'println!("{0}", {1});'.format("".join(placeholders), ", ".join(values))
-            elif len(values) == 1 and values[0] == '"' and reversed(values[0]) == '"':
+            elif len(values) == 1 and values[0][0] == '"':
                 return 'println!({0});'.format(values[0])
+            else:
+                return 'println!("{0}", {1});'.format("".join(placeholders), ", ".join(values))
 
         return '{0}({1})'.format(fname, args)
 
