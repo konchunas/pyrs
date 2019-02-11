@@ -156,9 +156,7 @@ class RustTranspiler(CLikeTranspiler):
             for n in node.args:
                 values.append(self.visit(n))
                 placeholders.append("{:?} ")
-            if len(values) != 1:
-                return 'println!("{0}", {1});'.format("".join(placeholders), ", ".join(values))
-            elif len(values) == 1 and values[0][0] == '"':
+            if len(values) == 1 and values[0][0] == '"':
                 return 'println!({0});'.format(values[0])
             else:
                 return 'println!("{0}", {1});'.format("".join(placeholders), ", ".join(values))
