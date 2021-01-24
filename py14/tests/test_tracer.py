@@ -1,4 +1,4 @@
-from common.tracer import value_type, value_expr, decltype, is_list, is_recursive
+from py14.tracer import value_type, value_expr, decltype, is_list, is_recursive
 from common.context import add_variable_context, add_list_calls
 from common.scope import add_scope_context
 import ast
@@ -78,26 +78,19 @@ class TestValueExpr:
         assert t == "foo(3 * 1) + 2"
 
 
-# def test_decltype_normal_var():
-#     source = parse(
-#         "x = 3",
-#         "y = foo(x)",
-#     )
-#     y = source.body[1]
-#     t = decltype(y)
-#     assert t == "decltype(foo(x))"
-#
-#
-# def test_decltype_list_var():
-#     source = parse(
-#         "results = []",
-#         "x = 3",
-#         "results.append(x)",
-#     )
-#     add_list_calls(source)
-#     results = source.body[0]
-#     t = decltype(results)
-#     assert t == "std::vector<decltype(3)>"
+def test_decltype_normal_var():
+    source = parse("x = 3", "y = foo(x)")
+    y = source.body[1]
+    t = decltype(y)
+    assert t == "decltype(foo(x))"
+
+
+def test_decltype_list_var():
+    source = parse("results = []", "x = 3", "results.append(x)")
+    add_list_calls(source)
+    results = source.body[0]
+    t = decltype(results)
+    assert t == "std::vector<decltype(3)>"
 
 
 def test_is_list():

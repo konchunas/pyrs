@@ -2,20 +2,18 @@
 Trace object types that are inserted into Python list.
 """
 import ast
-from .analysis import get_id
-from .clike import CLikeTranspiler
+from common.analysis import get_id
+from common.clike import CLikeTranspiler
 
 
 def decltype(node):
     """Create C++ decltype statement"""
-    # if is_list(node):
-    #     return "std::vector<decltype({0})>".format(value_type(node))
-    # else:
-    #     return "decltype({0})".format(value_type(node))
+    pass
 
 
 def is_builtin_import(name):
     return name == "sys" or name == "math"
+
 
 # is it slow? is it correct?
 def is_class_or_module(name, scopes):
@@ -39,10 +37,12 @@ def is_list(node):
         return is_list(node.value)
     elif isinstance(node, ast.Name):
         var = node.scopes.find(get_id(node))
-        return (hasattr(var, "assigned_from") and not
-                isinstance(var.assigned_from, ast.FunctionDef) and not
-                isinstance(var.assigned_from, ast.For) and
-                is_list(var.assigned_from.value))
+        return (
+            hasattr(var, "assigned_from")
+            and not isinstance(var.assigned_from, ast.FunctionDef)
+            and not isinstance(var.assigned_from, ast.For)
+            and is_list(var.assigned_from.value)
+        )
     else:
         return False
 
@@ -67,7 +67,7 @@ def value_type(node):
 
 
 class ValueExpressionVisitor(ast.NodeVisitor):
-    def visit_Num(self, node):
+    def visit_Constant(self, node):
         return str(node.n)
 
     def visit_Str(self, node):
@@ -75,17 +75,16 @@ class ValueExpressionVisitor(ast.NodeVisitor):
 
     def visit_Name(self, node):
         var = node.scopes.find(get_id(node))
-        
-        if not var: #TODO why no scopes found for node id?
+
+        if not var:  # TODO why no scopes found for node id?
             return get_id(node)
 
-        # if isinstance(var, object): 
-        #     return "o_b_j_e_c_t"
-
+        # TODO: code looks C++ specific. Move out
         if isinstance(var.assigned_from, ast.For):
             it = var.assigned_from.iter
             return "std::declval<typename decltype({0})::value_type>()".format(
-                   self.visit(it))
+                self.visit(it)
+            )
         elif isinstance(var.assigned_from, ast.FunctionDef):
             return get_id(var)
         else:
@@ -100,20 +99,22 @@ class ValueExpressionVisitor(ast.NodeVisitor):
         return self.visit(node.value)
 
     def visit_BinOp(self, node):
-        return "{0} {1} {2}".format(self.visit(node.left),
-                                    CLikeTranspiler().visit(node.op),
-                                    self.visit(node.right))
+        return "{0} {1} {2}".format(
+            self.visit(node.left),
+            CLikeTranspiler().visit(node.op),
+            self.visit(node.right),
+        )
 
 
 class ValueTypeVisitor(ast.NodeVisitor):
-    def visit_Num(self, node):
+    def visit_Constant(self, node):
         return value_expr(node)
 
     def visit_Str(self, node):
         return value_expr(node)
 
     def visit_Name(self, node):
-        if node.id == 'True' or node.id == 'False':
+        if node.id == "True" or node.id == "False":
             return CLikeTranspiler().visit(node)
 
         var = node.scopes.find(node.id)
@@ -149,17 +150,20 @@ def defined_before(node1, node2):
 
 
 def is_list_assignment(node):
-    return (isinstance(node.value, ast.List) and
-            isinstance(node.targets[0].ctx, ast.Store))
+    return isinstance(node.value, ast.List) and isinstance(
+        node.targets[0].ctx, ast.Store
+    )
 
 
 def is_list_addition(node):
     """Check if operation is adding something to a list"""
     list_operations = ["append", "extend", "insert"]
-    return (isinstance(node.func.ctx, ast.Load) and
-            hasattr(node.func, "value") and
-            isinstance(node.func.value, ast.Name) and
-            node.func.attr in list_operations)
+    return (
+        isinstance(node.func.ctx, ast.Load)
+        and hasattr(node.func, "value")
+        and isinstance(node.func.value, ast.Name)
+        and node.func.attr in list_operations
+    )
 
 
 def is_recursive(fun):
@@ -177,6 +181,7 @@ class RecursionFinder(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Call(self, node):
-        self.recursive = (isinstance(node.func, ast.Name) and
-                          node.func.id == self.function_name)
+        self.recursive = (
+            isinstance(node.func, ast.Name) and node.func.id == self.function_name
+        )
         self.generic_visit(node)

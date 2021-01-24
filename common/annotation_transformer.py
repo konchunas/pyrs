@@ -1,14 +1,17 @@
 import ast
 
-from .analysis import get_id
+from common.analysis import get_id
+
 
 def add_annotation_flags(node):
     return AnnotationTransformer().visit(node)
+
 
 class AnnotationTransformer(ast.NodeTransformer):
     """
     Adds a flag for every type annotation and nested types so they can be differentiated from array
     """
+
     def __init__(self):
         self.handling_annotation = False
 
