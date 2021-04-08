@@ -2,7 +2,7 @@ import io
 import re
 from setuptools import setup, find_packages
 
-__version__= '0.0.0'
+__version__= '0.1.0'
 
 install_requires= []
 setup_requires= []
@@ -42,7 +42,6 @@ Lorentz.
     setup_requires=setup_requires,
     tests_require=tests_require,
     packages=find_packages(exclude=['docs', 'examples', 'tests']),
-    scripts=['pyrs.py'],
     license='MIT',
     classifiers=[
         'License :: OSI Approved :: MIT License',
@@ -52,4 +51,7 @@ Lorentz.
         'Topic :: Utilities',
     ],
     test_suite='tests',
+    entry_points = {
+        'console_scripts': ['pyrs=pyrs.cli:main'],
+    }
 )
