@@ -9,7 +9,7 @@ setup_requires= []
 tests_require = ['pytest']
 
 setup(
-    name='pyrs',
+    name='python-rs',
     version=__version__,
     description='Python to Rust transpiler.',
     long_description="""
@@ -41,7 +41,7 @@ Lorentz.
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require,
-    packages=find_packages(exclude=['docs', 'examples', 'tests']),
+    packages=find_packages(exclude=['docs', 'examples', 'tests', 'tests*']),
     license='MIT',
     classifiers=[
         'License :: OSI Approved :: MIT License',
