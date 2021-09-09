@@ -95,7 +95,7 @@ class CLikeTranspiler(ast.NodeVisitor):
         return str(node.n)
 
     def visit_Str(self, node):
-        return '"{0}"'.format(node.s)
+        return '"{0}"'.format(node.s.replace('"', '\\"'))
 
     def visit_Return(self, node):
         if node.value:
