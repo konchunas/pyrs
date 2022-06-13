@@ -480,7 +480,7 @@ class RustTranspiler(CLikeTranspiler):
         for n in node.body:
             buf.append(self.visit(n))
 
-            buf.append('}')
+        buf.append('}')
 
         return "\n".join(buf)
 
