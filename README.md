@@ -1,3 +1,5 @@
+*This project is not maintained. Check out https://github.com/py2many/py2many*
+
 # Python to Rust transpiler
 
 This project started as Python to Rust syntax converter. It is not aimed at producing ready-to-compile code, but some basic stuff can be compiled easily (see Examples).
