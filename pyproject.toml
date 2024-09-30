@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=61.2.0", "wheel", "setuptools_scm[toml]>=3.4.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "python-rs"
+authors = [{name = "Julian Konchunas", email = "konchunas@gmail.com"}]
+license = {text = "MIT"}
+description = "Python to Rust transpiler."
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development",
+    "Topic :: Utilities",
+]
+urls = {Homepage = "http://github.com/konchunas/pyrs"}
+requires-python = ">=3.0.0"
+dynamic = ["version"]
+
+[project.readme]
+text = """
+Python to Rust transpiler
+This project started as Python to Rust syntax converter. It is not
+aimed at producing ready-to-compile code, but some basic stuff can be
+compiled easily.
+It generates unidiomatic non-optimized code with unnecessary
+allocations, but can reduce amount of edits you have to do when
+porting Python projects.
+Only basic subset of Python is supported right now and the end goal is
+to support common cases at least as a placeholders.
+The project is in experimental, so it may crash or silently skip some
+statements, so be careful.
+Based on Lukas Martinelli Py14
+(https://github.com/lukasmartinelli/py14) and Py14/python-3
+(https://github.com/ProgVal/py14/tree/python-3) branch by Valentin
+Lorentz."""
+content-type = "text/markdown"
+
+[project.scripts]
+pyrs = "pyrs.cli:main"
+
+[project.optional-dependencies]
+testing = ["pytest"]
+
+[tool.setuptools]
+packages = ["pyrs"]
+include-package-data = false
+
+[tool.setuptools_scm]
+
+[tool.aliases]
+test = "pytest"
